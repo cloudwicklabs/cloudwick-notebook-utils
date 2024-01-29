@@ -2,7 +2,7 @@
 
 This repository is aimed for providing scripts and documentation for setting up custom tools on top of Amorphic Notebooks.
 
-## VSCode
+## Code Server (VSCode)
 
 ### Manual Set up
 
