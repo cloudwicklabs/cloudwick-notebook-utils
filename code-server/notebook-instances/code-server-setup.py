@@ -25,9 +25,7 @@ import os
 import pathlib
 import subprocess
 import sys
-
-import requests
-
+import urllib.request
 
 def shell_pipe_settings(args: argparse.Namespace):
     """Configures shell pipe settings"""
@@ -68,12 +66,12 @@ def ensure_dir(path: str) -> str:
 
 
 def download_icon(code_server_install_loc):
-    """Downloads and configures  Code Server (VSCode) icon on the local machine"""
+    """Downloads and configures Code Server (VSCode) icon on the local machine"""
     icon_url = "https://www.svgrepo.com/download/374171/vscode.svg"
     icon_path = pathlib.Path(code_server_install_loc) / "icon.svg"
-    response = requests.get(icon_url, timeout=100)
-    with open(icon_path, "wb") as icon_file:
-        icon_file.write(response.content)
+    with urllib.request.urlopen(icon_url, timeout=100) as response:
+        with open(icon_path, "wb") as icon_file:
+            icon_file.write(response.read())
 
 
 def install_code_server(args: argparse.Namespace):
