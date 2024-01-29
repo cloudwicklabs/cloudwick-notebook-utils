@@ -1,20 +1,43 @@
 #!/home/ec2-user/anaconda3/envs/JupyterSystemEnv/bin/python
+"""
+Configure Jupyter Proxy and setup Code Server (VSCode) for AWS SageMaker Jupyter Notebook and Lab.
+
+This script configures Jupyter Proxy to enable access to Code Server (VSCode) within an AWS SageMaker Jupyter Notebook and JupyterLab environment.
+It ensures seamless integration of Code Server for enhanced coding capabilities within the SageMaker environment.
+
+Prerequisites:
+- This script assumes you have an active AWS SageMaker instance with Jupyter Notebook and JupyterLab installed.
+- It also assumes that you have necessary permissions to install and configure additional software within the SageMaker environment.
+
+Usage:
+- Run this script within your AWS SageMaker instance to configure Jupyter Proxy and setup Code Server.
+
+Example:
+    $ nohup sudo -u ec2-user /home/ec2-user/anaconda3/envs/JupyterSystemEnv/bin/python code-server-setup.py
+
+Note:
+- This script requires internet access to download and install additional dependencies.
+"""
 
 import argparse
 import json
 import os
 import pathlib
-import requests
 import subprocess
+import sys
+
+import requests
 
 
 def shell_pipe_settings(args: argparse.Namespace):
+    """Configures shell pipe settings"""
     return f"""
 {"set -x;" if args.verbose_shell else "# set -x;"}
 """
 
 
 def conda_activate_command(as_string: bool = False):
+    """Activates the Jupiter conda env"""
     command = [
         "source",
         "/home/ec2-user/anaconda3/bin/activate",
@@ -27,6 +50,7 @@ def conda_activate_command(as_string: bool = False):
 
 
 def conda_deactivate_command(as_string: bool = False):
+    """Deactivates the conda env"""
     command = [
         "conda",
         "deactivate",
@@ -44,28 +68,27 @@ def ensure_dir(path: str) -> str:
 
 
 def download_icon(code_server_install_loc):
+    """Downloads and configures  Code Server (VSCode) icon on the local machine"""
     icon_url = "https://www.svgrepo.com/download/374171/vscode.svg"
     icon_path = pathlib.Path(code_server_install_loc) / "icon.svg"
-    response = requests.get(icon_url)
+    response = requests.get(icon_url, timeout=100)
     with open(icon_path, "wb") as icon_file:
         icon_file.write(response.content)
 
 
 def install_code_server(args: argparse.Namespace):
+    """Installs Code Server (VSCode) on the local machine"""
     # Set variables from command line arguments
     code_server_version = args.code_server_version
     persistent_volume_path = args.persistent_volume_path
     code_server_install_loc = ensure_dir(f"{persistent_volume_path}/.code-server")
     xdg_data_home = ensure_dir(f"{persistent_volume_path}/.xdg/data")
     xdg_config_home = ensure_dir(f"{persistent_volume_path}/.xdg/config")
-    create_new_conda_env = args.create_new_conda_env
     conda_env_python_version = args.conda_env_python_version
     conda_env_location = ensure_dir(
         f"{code_server_install_loc}/conda/envs/codeserver_py{conda_env_python_version}"
     )
     use_custom_python_environment = args.use_custom_python_environment
-    launcher_entry_title = args.launcher_entry_title
-    proxy_path = args.proxy_path
     install_extensions = args.install_extensions
     # Install code-server
     download_icon(code_server_install_loc)
@@ -98,7 +121,7 @@ ln -s '{code_server_install_loc}/lib/code-server-{code_server_version}/bin/code-
         install_script, check=True, shell=True, executable=args.shell_executable
     )
     # create optional conda environment, and configure vscode to use it
-    if create_new_conda_env:
+    if args.create_new_conda_env:
         create_conda_script = f"""
 {shell_pipe_settings(args=args)}
 {conda_activate_command(as_string=True)}
@@ -159,12 +182,13 @@ def check_code_in_file(config_file, code_snippet):
     Returns:
         bool: True if the code snippet is found in the file, False otherwise.
     """
-    with open(config_file, "r") as file:
+    with open(config_file, "r", encoding="utf-8") as file:
         config_file_contents = file.read()
     return code_snippet in config_file_contents
 
 
 def configure_jupyter(args: argparse.Namespace):
+    """Configures Jupiter proxy server installation and set up for path for VSCode"""
     persistent_volume_path = args.persistent_volume_path
     code_server_install_loc = f"{persistent_volume_path}/.code-server"
     xdg_data_home = f"{persistent_volume_path}/.xdg/data"
@@ -175,7 +199,7 @@ def configure_jupyter(args: argparse.Namespace):
     if not check_code_in_file(
         jupyter_config_file, f"{code_server_install_loc}/bin/code-server"
     ):
-        with open(jupyter_config_file, "a") as config_file:
+        with open(jupyter_config_file, "a", encoding="utf-8") as config_file:
             config_file.write(
                 f"""
 c.ServerProxy.servers = {{
@@ -201,6 +225,9 @@ c.ServerProxy.servers = {{
         ["/home/ec2-user/anaconda3/envs/JupyterSystemEnv/bin/jupyter-lab", "--version"],
         universal_newlines=True,
     ).strip()
+    if not jupyter_lab_version.startswith("1."):
+        print("Running potentially unsupported Jupiter version.")
+
     subprocess_args = conda_activate_command()
 
     conda_setup_commands = [
@@ -260,15 +287,15 @@ def _argparse_bool(action, arg_string):
     """Custom action to parse True or False values."""
     if arg_string.lower() in ["true", "t"]:
         return True
-    elif arg_string.lower() in ["false", "f"]:
+    if arg_string.lower() in ["false", "f"]:
         return False
-    else:
-        raise ArgumentTypeError(
-            f"argument {action} requires True or False, not {arg_string!r}"
-        )
+    raise argparse.ArgumentTypeError(
+        f"argument {action} requires True or False, not {arg_string!r}"
+    )
 
 
 def arg_parser() -> argparse.Namespace:
+    """ArgParser for code server setup"""
     parser = argparse.ArgumentParser(
         description="Install and configure code-server and Jupyter.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -356,12 +383,14 @@ def arg_parser() -> argparse.Namespace:
 
 
 def must_run_as_sudo():
+    """Ensure this code is ran with sudo"""
     if os.getenv("SUDO_USER") is None and os.getuid() != 0:
         print("This script must be run as root/sudo.")
-        exit(1)
+        sys.exit(1)
 
 
 def main():
+    """Main function"""
     parser = arg_parser()
     args = parser.parse_args()
     must_run_as_sudo()
