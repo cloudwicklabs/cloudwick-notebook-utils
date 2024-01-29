@@ -1,0 +1,13 @@
+[MASTER]
+
+[MESSAGES CONTROL]
+disable = C0103
+
+[BASIC]
+indent-string = "    "
+
+[FORMAT]
+max-line-length = 200
+
+[VARIABLES]
+init-import = no
