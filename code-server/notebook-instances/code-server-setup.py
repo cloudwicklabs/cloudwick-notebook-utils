@@ -27,6 +27,7 @@ import subprocess
 import sys
 import urllib.request
 
+
 def shell_pipe_settings(args: argparse.Namespace):
     """Configures shell pipe settings"""
     return f"""
@@ -74,6 +75,18 @@ def download_icon(code_server_install_loc):
             icon_file.write(response.read())
 
 
+def _vs_code_env_vars(args: argparse.Namespace) -> str:
+    persistent_volume_path = args.persistent_volume_path
+    code_server_install_loc = f"{persistent_volume_path}/.code-server"
+    xdg_data_home = f"{persistent_volume_path}/.xdg/data"
+    xdg_config_home = f"{persistent_volume_path}/.xdg/config"
+    return f"""
+export XDG_DATA_HOME="{xdg_data_home}";
+export XDG_CONFIG_HOME="{xdg_config_home}";
+export PATH="{code_server_install_loc}/bin/:$PATH";
+"""
+
+
 def install_code_server(args: argparse.Namespace):
     """Installs Code Server (VSCode) on the local machine"""
     # Set variables from command line arguments
@@ -81,7 +94,6 @@ def install_code_server(args: argparse.Namespace):
     persistent_volume_path = args.persistent_volume_path
     code_server_install_loc = ensure_dir(f"{persistent_volume_path}/.code-server")
     xdg_data_home = ensure_dir(f"{persistent_volume_path}/.xdg/data")
-    xdg_config_home = ensure_dir(f"{persistent_volume_path}/.xdg/config")
     conda_env_python_version = args.conda_env_python_version
     conda_env_location = ensure_dir(
         f"{code_server_install_loc}/conda/envs/codeserver_py{conda_env_python_version}"
@@ -93,10 +105,7 @@ def install_code_server(args: argparse.Namespace):
     install_script = f"""
 {shell_pipe_settings(args=args)}
 unset SUDO_UID
-
-export XDG_DATA_HOME={xdg_data_home}
-export XDG_CONFIG_HOME={xdg_config_home}
-export PATH="{code_server_install_loc}/bin/:$PATH"
+{_vs_code_env_vars(args=args)}
 
 
 if [[ ! -d "{code_server_install_loc}/lib/code-server-{code_server_version}" ]]; then
@@ -157,12 +166,16 @@ fi
         )
     # install vscode addons
     if len(install_extensions) > 0:
-        install_script_extension_script = f"{shell_pipe_settings(args=args)}\n" + "\n".join(
+        install_script_extension_script = f"""{shell_pipe_settings(args=args)}
+unset SUDO_UID
+{_vs_code_env_vars(args=args)}
+""" + "\n".join(
             [
                 f"{code_server_install_loc}/bin/code-server --install-extension {extension} --force;"
                 for extension in install_extensions
             ]
         )
+
         subprocess.run(
             install_script_extension_script,
             check=True,
