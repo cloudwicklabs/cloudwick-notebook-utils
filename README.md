@@ -20,7 +20,7 @@ code_server_setup_pid=$!
 wait $code_server_setup_pid
 echo "code_server_setup.py has finished!"
 # for non dockerized jupiter servers
-systemctl restart jupyter-server
+sudo systemctl restart jupyter-server
 ```
 
 ### Lifecycle Set up
