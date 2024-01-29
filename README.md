@@ -9,7 +9,7 @@ This repository is aimed for providing scripts and documentation for setting up 
 Open a Jupiter notebook terminal, and run the following commands. The setup takes typically under 10 minutes.
 
 ```sh
-export notebook_utils_release="cnu-0.1.0"
+export notebook_utils_release="cnu-0.1.1"
 curl -LO https://github.com/cloudwicklabs/cloudwick-notebook-utils/archive/refs/tags/${notebook_utils_release}.tar.gz
 tar -xvzf ${notebook_utils_release}.tar.gz
 nohup sudo -u ec2-user /home/ec2-user/anaconda3/envs/JupyterSystemEnv/bin/python cloudwick-notebook-utils-${notebook_utils_release}/code-server/notebook-instances/code-server-setup.py &
