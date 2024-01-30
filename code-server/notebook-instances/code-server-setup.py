@@ -28,6 +28,23 @@ import sys
 import urllib.request
 
 
+def system_configs(args: argparse.Namespace):
+    """General system configurations to improve the end user experience"""
+    if not args.customize_system:
+        return
+    set_max_user_watches(max_user_watches=args.max_user_watches)
+
+
+def set_max_user_watches(max_user_watches: int = 524288):
+    """VSCode needs to be able to track files for changes
+    https://code.visualstudio.com/docs/setup/linux#_visual-studio-code-is-unable-to-watch-for-file-changes-in-this-large-workspace-error-enospc
+    """
+    with open(
+        "/proc/sys/fs/inotify/max_user_watches", "w", encoding="utf-8"
+    ) as max_user_watches_file:
+        max_user_watches_file.write(max_user_watches)
+
+
 def shell_pipe_settings(args: argparse.Namespace):
     """Configures shell pipe settings"""
     return f"""
@@ -305,6 +322,19 @@ def _argparse_bool(action, arg_string):
     )
 
 
+def _argparse_int(action: str, arg: int, min_allowed: int, max_allowed: int):
+    """Custom action to validate arg int in [min, max]"""
+    if arg < min_allowed:
+        raise argparse.ArgumentTypeError(
+            f"argument {action} require value greater or equal to {min_allowed}, not {arg!r}"
+        )
+    if arg > max_allowed:
+        raise argparse.ArgumentTypeError(
+            f"argument {action} require value lower or equal to {max_allowed}, not {arg!r}"
+        )
+    return arg
+
+
 def arg_parser() -> argparse.Namespace:
     """ArgParser for code server setup"""
     parser = argparse.ArgumentParser(
@@ -334,7 +364,13 @@ def arg_parser() -> argparse.Namespace:
         "--create-new-conda-env",
         default=True,
         type=lambda x: _argparse_bool("create_new_conda_env", x),
-        help="Create a new conda environment (default: True). Set to False to disable, True to explicitly enable.",
+        help="Create a new conda environment. Set to False to disable, True to explicitly enable.",
+    )
+    parser.add_argument(
+        "--customize-system",
+        default=True,
+        type=lambda x: _argparse_bool("customize_system", x),
+        help="Perform custom operations to the system such as increase watch file limits etc. Set to False to disable, True to explicitly enable.",
     )
     parser.add_argument(
         "--verbose-shell",
@@ -359,7 +395,7 @@ def arg_parser() -> argparse.Namespace:
         dest="use_custom_python_environment",
         default=False,
         type=lambda x: _argparse_bool("use_custom_python_environment", x),
-        help="Use a custom extension gallery (default: True). Set to False to disable, True to explicitly enable.",
+        help="Use a custom extension gallery. Set to False to disable, True to explicitly enable.",
     )
     parser.add_argument(
         "--launcher-entry-title",
@@ -390,6 +426,15 @@ def arg_parser() -> argparse.Namespace:
         ],
         help="List of vscode/code-server extensions to install.",
     )
+    parser.add_argument(
+        "--max-user-watches",
+        type=lambda x: _argparse_int(
+            "max_user_watches", x, min_allowed=8192, max_allowed=524288
+        ),
+        default=524288,
+        help="List of vscode/code-server extensions to install. Depended on customize-system arg",
+    )
+
     return parser
 
 
@@ -407,6 +452,7 @@ def main():
     must_run_as_sudo()
     install_code_server(args)
     configure_jupyter(args)
+    system_configs(args)
     print("Finished setup...")
 
 

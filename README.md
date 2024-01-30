@@ -6,9 +6,15 @@ This repository is aimed for providing scripts and documentation for setting up 
 
 ### Manual Set up
 
-Open a Jupiter notebook terminal, and run the following commands. The setup takes typically under 10 minutes.
+Open a Jupiter notebook terminal, and run the following commands. The setup takes typically under 10 minutes. Choose if you want to use automatically the latest release or a specific one.
 
 ```sh
+# use the latest
+export notebook_utils_release_latest=$(curl -s https://api.github.com/repos/cloudwicklabs/cloudwick-notebook-utils/releases/latest | grep '"tag_name":' | cut -d '"' -f 4)
+```
+
+```sh
+# or use a specific release
 export notebook_utils_release="cnu-0.1.1"
 curl -LO https://github.com/cloudwicklabs/cloudwick-notebook-utils/archive/refs/tags/${notebook_utils_release}.tar.gz
 tar -xvzf ${notebook_utils_release}.tar.gz
