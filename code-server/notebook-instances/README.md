@@ -2,8 +2,10 @@
 
 ```sh
 > python code-server-setup.py --help
-usage: code-server-setup.py [-h] [--code-server-version CODE_SERVER_VERSION] [--jupyter-server-proxy-version JUPYTER_SERVER_PROXY_VERSION] [--shell-executable SHELL_EXECUTABLE]
-                            [--persistent-volume-path PERSISTENT_VOLUME_PATH] [--create-new-conda-env CREATE_NEW_CONDA_ENV] [--verbose-shell VERBOSE_SHELL] [--restart-jupiter RESTART_JUPITER] [--conda-env-python-version CONDA_ENV_PYTHON_VERSION] [--use-custom-python-environment USE_CUSTOM_PYTHON_ENVIRONMENT] [--launcher-entry-title LAUNCHER_ENTRY_TITLE]
+usage: code-server-setup.py [-h] [--code-server-version CODE_SERVER_VERSION] [--jupyter-server-proxy-version JUPYTER_SERVER_PROXY_VERSION]
+                            [--shell-executable SHELL_EXECUTABLE] [--persistent-volume-path PERSISTENT_VOLUME_PATH] [--create-new-conda-env CREATE_NEW_CONDA_ENV]
+                            [--verbose-shell VERBOSE_SHELL] [--restart-jupiter RESTART_JUPITER] [--conda-env-python-version CONDA_ENV_PYTHON_VERSION]
+                            [--use-custom-python-environment USE_CUSTOM_PYTHON_ENVIRONMENT] [--launcher-entry-title LAUNCHER_ENTRY_TITLE]
                             [--chown-username CHOWN_USERNAME] [--proxy-path PROXY_PATH] [--install-extensions INSTALL_EXTENSIONS]
 
 Install and configure code-server and Jupyter.
@@ -35,8 +37,8 @@ options:
   --proxy-path PROXY_PATH
                         Path for the proxy. (default: codeserver)
   --install-extensions INSTALL_EXTENSIONS
-                        List of vscode/code-server extensions to install. (default: ['ms-toolsai.jupyter', 'formulahendry.code-runner', 'ms-python.python', 'ryuta46.multi-command',
-                        'ms-azuretools.vscode-docker', 'mechatroner.rainbow-csv', 'esbenp.prettier-vscode'])
+                        List of vscode/code-server extensions to install. (default: '["ms-toolsai.jupyter", "formulahendry.code-runner",
+                        "ms-python.python", "ryuta46.multi-command", "ms-azuretools.vscode-docker", "mechatroner.rainbow-csv", "esbenp.prettier-vscode"]')
 ```
 
 ## Dependencies licenses
