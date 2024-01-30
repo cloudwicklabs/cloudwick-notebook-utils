@@ -1,6 +1,5 @@
 # code-server-setup
 
-
 ```sh
 > python code-server-setup.py --help
 usage: code-server-setup.py [-h] [--code-server-version CODE_SERVER_VERSION] [--jupyter-server-proxy-version JUPYTER_SERVER_PROXY_VERSION] [--shell-executable SHELL_EXECUTABLE]
@@ -40,6 +39,17 @@ options:
                         'ms-azuretools.vscode-docker', 'mechatroner.rainbow-csv', 'esbenp.prettier-vscode'])
 ```
 
+## Dependencies licenses
+
+| plugin                      | license                                                                                       |
+| --------------------------- | --------------------------------------------------------------------------------------------- |
+| ms-toolsai.jupyter          | [MIT License](https://marketplace.visualstudio.com/items/ms-toolsai.jupyter/license)          |
+| formulahendry.code-runner   | [MIT License](https://marketplace.visualstudio.com/items/formulahendry.code-runner/license)   |
+| ms-python.python            | [MIT License](https://marketplace.visualstudio.com/items/ms-python.python/license)            |
+| ryuta46.multi-command       | [MIT License](https://marketplace.visualstudio.com/items/ryuta46.multi-command/license)       |
+| ms-azuretools.vscode-docker | [MIT License](https://marketplace.visualstudio.com/items/ms-azuretools.vscode-docker/license) |
+| mechatroner.rainbow-csv     | [MIT License](https://marketplace.visualstudio.com/items/mechatroner.rainbow-csv/license)     |
+| esbenp.prettier-vscode      | [MIT License](https://marketplace.visualstudio.com/items/esbenp.prettier-vscode/license)      |
 
 ## Debugging
 
