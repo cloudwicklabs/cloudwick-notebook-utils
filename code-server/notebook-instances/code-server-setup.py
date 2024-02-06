@@ -348,7 +348,7 @@ def arg_parser() -> argparse.Namespace:
     parser.add_argument(
         "--jupyter-server-proxy-version",
         type=str,
-        default="1.6.0",
+        default="1.6.0-3.6.7",
         help="Jupyter server proxy version.",
     )
     parser.add_argument(
