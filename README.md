@@ -6,7 +6,7 @@ This repository is aimed for providing scripts and documentation for setting up 
 
 ### Manual Set up
 
-Open a Jupiter notebook terminal, and run the following commands. The setup takes typically under 10 minutes. Choose if you want to use automatically the latest release or a specific one.
+Open a Jupyter notebook terminal, and run the following commands. The setup takes typically under 10 minutes. Choose if you want to use automatically the latest release or a specific one.
 
 ```sh
 # use the latest
@@ -37,10 +37,10 @@ You may find sample Lifecycle policies for vscode-with-glue for [start-up here](
 
 ### Screenshots
 
-#### Starting VSCode from Jupiter Lab
+#### Starting VSCode from Jupyter Lab
 
-![Jupiter Lab - Code Server](/code-server/notebook-instances/imgs/launcher-code-server.png)
+![Jupyter Lab - Code Server](/code-server/notebook-instances/imgs/launcher-code-server.png)
 
-#### Starting VSCode from Jupiter Notebook
+#### Starting VSCode from Jupyter Notebook
 
-![Jupiter Notebook - Code Server](/code-server/notebook-instances/imgs/jupiter-code-server.png)
+![Jupyter Notebook - Code Server](/code-server/notebook-instances/imgs/jupiter-code-server.png)
