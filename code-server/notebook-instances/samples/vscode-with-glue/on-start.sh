@@ -24,7 +24,7 @@ sudo -u ec2-user -i <<'EOF'
 ANACONDA_DIR=/home/ec2-user/anaconda3
 
 # Create and Activate Conda Env
-echo "INFO: Creating glue_pyspark conda enviornment"
+echo "INFO: Creating glue_pyspark conda environment"
 conda create --name glue_pyspark ipykernel jupyterlab pandas=1.5.3 -y
 
 echo "INFO: Activating glue_pyspark"

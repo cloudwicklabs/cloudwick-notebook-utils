@@ -53,7 +53,7 @@ def shell_pipe_settings(args: argparse.Namespace):
 
 
 def conda_activate_command(as_string: bool = False):
-    """Activates the Jupiter conda env"""
+    """Activates the Jupyter conda env"""
     command = [
         "source",
         "/home/ec2-user/anaconda3/bin/activate",
@@ -215,8 +215,30 @@ def check_code_in_file(config_file, code_snippet):
     return code_snippet in config_file_contents
 
 
+def _get_jupyter_server_proxy_version(
+    args: argparse.Namespace, jupyter_lab_version: str
+) -> str:
+    """Select the most appropriate version for the jupyter server proxy
+
+    Args:
+        args (argparse.Namespace): cli arguments
+        jupyter_lab_version (str): jupyter lab version
+
+    Returns:
+        str: the most suitable version for jupyter server proxy
+    """
+    if args.jupyter_server_proxy_version is not None:
+        return args.jupyter_server_proxy_version
+    if jupyter_lab_version.startswith("1."):
+        return "1.6.0"
+    if jupyter_lab_version.startswith("3."):
+        return "3.2.0"
+    print("Running potentially unsupported Jupyter version. Defaulting jupyter server proxy version.")
+    return "3.2.0"
+
+
 def configure_jupyter(args: argparse.Namespace):
-    """Configures Jupiter proxy server installation and set up for path for VSCode"""
+    """Configures Jupyter proxy server installation and set up for path for VSCode"""
     persistent_volume_path = args.persistent_volume_path
     code_server_install_loc = f"{persistent_volume_path}/.code-server"
     xdg_data_home = f"{persistent_volume_path}/.xdg/data"
@@ -254,16 +276,20 @@ c.ServerProxy.servers = {{
         universal_newlines=True,
     ).strip()
     if not jupyter_lab_version.startswith("1."):
-        print("Running potentially unsupported Jupiter version.")
+        print("Running potentially unsupported Jupyter version.")
 
     subprocess_args = conda_activate_command()
+
+    jupyter_server_proxy_version = _get_jupyter_server_proxy_version(
+        args=args, jupyter_lab_version=jupyter_lab_version
+    )
 
     conda_setup_commands = [
         ["pip", "uninstall", "--yes", "nbserverproxy", ";"],
         [
             "pip",
             "install",
-            f"jupyter-server-proxy=={args.jupyter_server_proxy_version}",
+            f"jupyter-server-proxy=={jupyter_server_proxy_version}",
             ";",
         ],
         ["jupyter", "labextension", "install", "@jupyterlab/server-proxy", ";"],
@@ -300,7 +326,7 @@ c.ServerProxy.servers = {{
         print(
             "Running in rootless mode; please restart Jupyter Server from the 'File' > 'Shut Down' menu and re-open Jupyter/JupyterLab."
         )
-    elif args.restart_jupiter:
+    elif args.restart_jupyter:
         print("Root mode. Restarting Jupyter Server...")
         subprocess_args = ["sudo", "systemctl", "restart", "jupyter-server", ";"]
         subprocess.run(
@@ -348,7 +374,7 @@ def arg_parser() -> argparse.Namespace:
     parser.add_argument(
         "--jupyter-server-proxy-version",
         type=str,
-        default="1.6.0",
+        default=None,
         help="Jupyter server proxy version.",
     )
     parser.add_argument(
@@ -379,10 +405,10 @@ def arg_parser() -> argparse.Namespace:
         help="Make the shell verbose for debug purposes. Set to False to disable, True to explicitly enable.",
     )
     parser.add_argument(
-        "--restart-jupiter",
+        "--restart-jupyter",
         default=False,
-        type=lambda x: _argparse_bool("restart_jupiter", x),
-        help="Restart the jupiter server at the end of the run. Set to False to disable, True to explicitly enable.",
+        type=lambda x: _argparse_bool("restart_jupyter", x),
+        help="Restart the jupyter server at the end of the run. Set to False to disable, True to explicitly enable.",
     )
     parser.add_argument(
         "--conda-env-python-version",

@@ -6,7 +6,7 @@ This repository is aimed for providing scripts and documentation for setting up 
 
 ### Manual Set up
 
-Open a Jupiter notebook terminal, and run the following commands. The setup takes typically under 10 minutes. Choose if you want to use automatically the latest release or a specific one.
+Open a Jupyter notebook terminal, and run the following commands. The setup takes typically under 10 minutes. Choose if you want to use automatically the latest release or a specific one.
 
 ```sh
 # use the latest
@@ -15,7 +15,7 @@ export notebook_utils_release_latest=$(curl -s https://api.github.com/repos/clou
 
 ```sh
 # or use a specific release
-export notebook_utils_release="cnu-0.1.1"
+export notebook_utils_release="cnu-0.1.2"
 curl -LO https://github.com/cloudwicklabs/cloudwick-notebook-utils/archive/refs/tags/${notebook_utils_release}.tar.gz
 tar -xvzf ${notebook_utils_release}.tar.gz
 nohup sudo -u ec2-user /home/ec2-user/anaconda3/envs/JupyterSystemEnv/bin/python cloudwick-notebook-utils-${notebook_utils_release}/code-server/notebook-instances/code-server-setup.py &
@@ -25,7 +25,7 @@ code_server_setup_pid=$!
 # ... other code goes here
 wait $code_server_setup_pid
 echo "code_server_setup.py has finished!"
-# for non dockerized jupiter servers
+# for non dockerized jupyter servers
 sudo systemctl restart jupyter-server
 ```
 
@@ -37,10 +37,10 @@ You may find sample Lifecycle policies for vscode-with-glue for [start-up here](
 
 ### Screenshots
 
-#### Starting VSCode from Jupiter Lab
+#### Starting VSCode from Jupyter Lab
 
-![Jupiter Lab - Code Server](/code-server/notebook-instances/imgs/launcher-code-server.png)
+![Jupyter Lab - Code Server](/code-server/notebook-instances/imgs/launcher-code-server.png)
 
-#### Starting VSCode from Jupiter Notebook
+#### Starting VSCode from Jupyter Notebook
 
-![Jupiter Notebook - Code Server](/code-server/notebook-instances/imgs/jupiter-code-server.png)
+![Jupyter Notebook - Code Server](/code-server/notebook-instances/imgs/jupyter-code-server.png)
