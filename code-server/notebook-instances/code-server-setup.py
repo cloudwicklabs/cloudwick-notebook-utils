@@ -215,6 +215,28 @@ def check_code_in_file(config_file, code_snippet):
     return code_snippet in config_file_contents
 
 
+def _get_jupyter_server_proxy_version(
+    args: argparse.Namespace, jupyter_lab_version: str
+) -> str:
+    """Select the most appropriate version for the jupiter server proxy
+
+    Args:
+        args (argparse.Namespace): cli arguments
+        jupyter_lab_version (str): jupyter lab version
+
+    Returns:
+        str: the most suitable version for jupyter server proxy
+    """
+    if args.jupyter_server_proxy_version is not None:
+        return args.jupyter_server_proxy_version
+    if jupyter_lab_version.startswith("1."):
+        return "1.6.0"
+    if jupyter_lab_version.startswith("3."):
+        return "3.2.0"
+    print("Running potentially unsupported Jupiter version. Defaulting jupiter server proxy version.")
+    return "3.2.0"
+
+
 def configure_jupyter(args: argparse.Namespace):
     """Configures Jupiter proxy server installation and set up for path for VSCode"""
     persistent_volume_path = args.persistent_volume_path
@@ -258,12 +280,16 @@ c.ServerProxy.servers = {{
 
     subprocess_args = conda_activate_command()
 
+    jupyter_server_proxy_version = _get_jupyter_server_proxy_version(
+        args=args, jupyter_lab_version=jupyter_lab_version
+    )
+
     conda_setup_commands = [
         ["pip", "uninstall", "--yes", "nbserverproxy", ";"],
         [
             "pip",
             "install",
-            f"jupyter-server-proxy=={args.jupyter_server_proxy_version}",
+            f"jupyter-server-proxy=={jupyter_server_proxy_version}",
             ";",
         ],
         ["jupyter", "labextension", "install", "@jupyterlab/server-proxy", ";"],
@@ -348,7 +374,7 @@ def arg_parser() -> argparse.Namespace:
     parser.add_argument(
         "--jupyter-server-proxy-version",
         type=str,
-        default="1.6.0-3.6.7",
+        default=None,
         help="Jupyter server proxy version.",
     )
     parser.add_argument(
