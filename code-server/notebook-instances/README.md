@@ -4,7 +4,7 @@
 > python code-server-setup.py --help
 usage: code-server-setup.py [-h] [--code-server-version CODE_SERVER_VERSION] [--jupyter-server-proxy-version JUPYTER_SERVER_PROXY_VERSION]
                             [--shell-executable SHELL_EXECUTABLE] [--persistent-volume-path PERSISTENT_VOLUME_PATH] [--create-new-conda-env CREATE_NEW_CONDA_ENV]
-                            [--verbose-shell VERBOSE_SHELL] [--restart-jupiter RESTART_JUPITER] [--conda-env-python-version CONDA_ENV_PYTHON_VERSION]
+                            [--verbose-shell VERBOSE_SHELL] [--restart-jupyter RESTART_JUPYTER] [--conda-env-python-version CONDA_ENV_PYTHON_VERSION]
                             [--use-custom-python-environment USE_CUSTOM_PYTHON_ENVIRONMENT] [--launcher-entry-title LAUNCHER_ENTRY_TITLE]
                             [--chown-username CHOWN_USERNAME] [--proxy-path PROXY_PATH] [--install-extensions INSTALL_EXTENSIONS]
 
@@ -24,8 +24,8 @@ options:
                         Create a new conda environment (default: True). Set to False to disable, True to explicitly enable. (default: True)
   --verbose-shell VERBOSE_SHELL
                         Make the shell verbose for debug purposes. Set to False to disable, True to explicitly enable. (default: False)
-  --restart-jupiter RESTART_JUPITER
-                        Restart the jupiter server at the end of the run. Set to False to disable, True to explicitly enable. (default: False)
+  --restart-jupyter RESTART_JUPYTER
+                        Restart the jupyter server at the end of the run. Set to False to disable, True to explicitly enable. (default: False)
   --conda-env-python-version CONDA_ENV_PYTHON_VERSION
                         Python version for the conda environment. (default: 3.11)
   --use-custom-python-environment USE_CUSTOM_PYTHON_ENVIRONMENT
@@ -55,4 +55,4 @@ options:
 
 ## Debugging
 
-In the case of failures you can check the jupiter log `cat /var/log/jupyter.log` or the nohup logs.
+In the case of failures you can check the jupyter log `cat /var/log/jupyter.log` or the nohup logs.

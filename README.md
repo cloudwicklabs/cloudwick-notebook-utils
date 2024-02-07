@@ -25,7 +25,7 @@ code_server_setup_pid=$!
 # ... other code goes here
 wait $code_server_setup_pid
 echo "code_server_setup.py has finished!"
-# for non dockerized jupiter servers
+# for non dockerized jupyter servers
 sudo systemctl restart jupyter-server
 ```
 
@@ -43,4 +43,4 @@ You may find sample Lifecycle policies for vscode-with-glue for [start-up here](
 
 #### Starting VSCode from Jupyter Notebook
 
-![Jupyter Notebook - Code Server](/code-server/notebook-instances/imgs/jupiter-code-server.png)
+![Jupyter Notebook - Code Server](/code-server/notebook-instances/imgs/jupyter-code-server.png)
