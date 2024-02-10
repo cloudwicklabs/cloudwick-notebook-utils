@@ -39,10 +39,17 @@ def set_max_user_watches(max_user_watches: int = 524288):
     """VSCode needs to be able to track files for changes
     https://code.visualstudio.com/docs/setup/linux#_visual-studio-code-is-unable-to-watch-for-file-changes-in-this-large-workspace-error-enospc
     """
-    with open(
-        "/proc/sys/fs/inotify/max_user_watches", "w", encoding="utf-8"
-    ) as max_user_watches_file:
-        max_user_watches_file.write(max_user_watches)
+    try:
+        with open(
+            "/proc/sys/fs/inotify/max_user_watches", "w", encoding="utf-8"
+        ) as max_user_watches_file:
+            max_user_watches_file.write(str(max_user_watches))
+    except PermissionError:
+        # If PermissionError occurs, try using sudo to gain necessary permissions
+        subprocess.run(
+            ["sudo", "tee", "/proc/sys/fs/inotify/max_user_watches"],
+            input=str(max_user_watches).encode("utf-8"),
+        )
 
 
 def shell_pipe_settings(args: argparse.Namespace):
@@ -233,7 +240,9 @@ def _get_jupyter_server_proxy_version(
         return "1.6.0"
     if jupyter_lab_version.startswith("3."):
         return "3.2.0"
-    print("Running potentially unsupported Jupyter version. Defaulting jupyter server proxy version.")
+    print(
+        "Running potentially unsupported Jupyter version. Defaulting jupyter server proxy version."
+    )
     return "3.2.0"
 
 
@@ -275,8 +284,6 @@ c.ServerProxy.servers = {{
         ["/home/ec2-user/anaconda3/envs/JupyterSystemEnv/bin/jupyter-lab", "--version"],
         universal_newlines=True,
     ).strip()
-    if not jupyter_lab_version.startswith("1."):
-        print("Running potentially unsupported Jupyter version.")
 
     subprocess_args = conda_activate_command()
 
