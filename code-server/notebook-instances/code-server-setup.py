@@ -49,6 +49,8 @@ def set_max_user_watches(max_user_watches: int = 524288):
         subprocess.run(
             ["sudo", "tee", "/proc/sys/fs/inotify/max_user_watches"],
             input=str(max_user_watches).encode("utf-8"),
+            check=True,
+            shell=True,
         )
 
 
