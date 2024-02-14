@@ -28,30 +28,25 @@ import sys
 import urllib.request
 
 
-def system_configs(args: argparse.Namespace):
+def system_configs(args: argparse.Namespace) -> None:
     """General system configurations to improve the end user experience"""
     if not args.customize_system:
-        return
-    set_max_user_watches(max_user_watches=args.max_user_watches)
+        return None
+    return set_max_user_watches(max_user_watches=args.max_user_watches)
 
 
-def set_max_user_watches(max_user_watches: int = 524288):
-    """VSCode needs to be able to track files for changes
+def set_max_user_watches(max_user_watches: int = 524288) -> None:
+    """Set max_user_watches temporarily until next reboot.
+    VSCode needs to be able to track files for changes
     https://code.visualstudio.com/docs/setup/linux#_visual-studio-code-is-unable-to-watch-for-file-changes-in-this-large-workspace-error-enospc
     """
     try:
-        with open(
-            "/proc/sys/fs/inotify/max_user_watches", "w", encoding="utf-8"
-        ) as max_user_watches_file:
-            max_user_watches_file.write(str(max_user_watches))
-    except PermissionError:
-        # If PermissionError occurs, try using sudo to gain necessary permissions
         subprocess.run(
-            ["sudo", "tee", "/proc/sys/fs/inotify/max_user_watches"],
-            input=str(max_user_watches).encode("utf-8"),
+            ["sudo", "sysctl", "-w", f"fs.inotify.max_user_watches={max_user_watches}"],
             check=True,
-            shell=True,
         )
+    except subprocess.CalledProcessError as e:
+        print("Warning: Failed to set max_user_watches:", e)
 
 
 def shell_pipe_settings(args: argparse.Namespace):
