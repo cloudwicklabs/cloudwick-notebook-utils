@@ -9,9 +9,21 @@ tar -xvzf ${notebook_utils_release}.tar.gz
 nohup sudo -u ec2-user /home/ec2-user/anaconda3/envs/JupyterSystemEnv/bin/python cloudwick-notebook-utils-${notebook_utils_release}/code-server/notebook-instances/code-server-setup.py &
 code_server_setup_pid=$!
 
+# Timeout Variables
+timeout_duration=$((12 * 60))
+check_interval=10
+elapsed_time=0
+
 # Check for glue_ready file and wait for code_server_setup.py if needed
 if [ -e /home/ec2-user/glue_ready ]; then
-    wait $code_server_setup_pid
+    while kill -0 $code_server_setup_pid 2>/dev/null; do
+      if [ $elapsed_time -ge $timeout_duration ]; then
+          echo "Process $code_server_setup_pid did not complete within 12 minutes."
+          exit 1
+      fi
+    sleep $check_interval
+    elapsed_time=$((elapsed_time + check_interval))
+    done
     echo "code_server_setup.py has finished!"
     # Restart jupyter-server for non-dockerized setups
     systemctl restart jupyter-server
@@ -85,7 +97,15 @@ echo "c.CondaKernelSpecManager.env_filter='anaconda3$|JupyterSystemEnv$|/R$'" >>
 
 EOF
 
-wait $code_server_setup_pid
+elapsed_time=0
+while kill -0 $code_server_setup_pid 2>/dev/null; do
+    if [ $elapsed_time -ge $timeout_duration ]; then
+        echo "Process $code_server_setup_pid did not complete within 12 minutes."
+        exit 1
+    fi
+    sleep $check_interval
+    elapsed_time=$((elapsed_time + check_interval))
+done
 echo "code_server_setup.py has finished!"
 
 systemctl restart jupyter-server
