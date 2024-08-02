@@ -16,19 +16,19 @@ elapsed_time=0
 
 # Check for glue_ready file and wait for code_server_setup.py if needed
 if [ -e /home/ec2-user/glue_ready ]; then
-    while kill -0 $code_server_setup_pid 2>/dev/null; do
-      if [ $elapsed_time -ge $timeout_duration ]; then
-          echo "Process $code_server_setup_pid did not complete within 12 minutes."
-          exit 1
-      fi
+  while kill -0 $code_server_setup_pid 2>/dev/null; do
+    if [ $elapsed_time -ge $timeout_duration ]; then
+      echo "Process $code_server_setup_pid did not complete within 12 minutes."
+      exit 1
+    fi
     sleep $check_interval
     elapsed_time=$((elapsed_time + check_interval))
-    done
-    echo "code_server_setup.py has finished!"
-    # Restart jupyter-server for non-dockerized setups
-    systemctl restart jupyter-server
-    # Exit with a 0 status code
-    exit 0
+  done
+  echo "code_server_setup.py has finished!"
+  # Restart jupyter-server for non-dockerized setups
+  systemctl restart jupyter-server
+  # Exit with a 0 status code
+  exit 0
 fi
 
 sudo -u ec2-user -i <<'EOF'
@@ -99,12 +99,12 @@ EOF
 
 elapsed_time=0
 while kill -0 $code_server_setup_pid 2>/dev/null; do
-    if [ $elapsed_time -ge $timeout_duration ]; then
-        echo "Process $code_server_setup_pid did not complete within 12 minutes."
-        exit 1
-    fi
-    sleep $check_interval
-    elapsed_time=$((elapsed_time + check_interval))
+  if [ $elapsed_time -ge $timeout_duration ]; then
+    echo "Process $code_server_setup_pid did not complete within 12 minutes."
+    exit 1
+  fi
+  sleep $check_interval
+  elapsed_time=$((elapsed_time + check_interval))
 done
 echo "code_server_setup.py has finished!"
 
