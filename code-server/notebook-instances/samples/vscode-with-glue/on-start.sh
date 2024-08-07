@@ -51,7 +51,7 @@ echo "INFO: Site package directory is --- $SITE_PACKAGES_DIR"
 echo "INFO: Installing AWS Glue Sessions with pip"
 # Get Latest Glue Session version
 # LATEST_GLUE_SESSIONS=$(curl -s https://pypi.org/pypi/aws-glue-sessions/json | python -c "import sys, json; print(json.load(sys.stdin)['info']['version'])")
-#pip install aws-glue-sessions==$LATEST_GLUE_SESSIONS
+# pip install aws-glue-sessions==$LATEST_GLUE_SESSIONS
 # If a particular glue session version to be installed
 pip install aws-glue-sessions==1.0.4
 
