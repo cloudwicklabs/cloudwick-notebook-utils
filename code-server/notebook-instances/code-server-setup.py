@@ -90,9 +90,11 @@ def ensure_dir(path: str) -> str:
 def download_icon(code_server_install_loc):
     """Reads and configures Code Server (VSCode) icon from the local directory"""
     current_dir = pathlib.Path(__file__).parent
-    local_icon_path = current_dir / "vscode.svg"  # Assuming the image is in the same directory as the Python script
+    local_icon_path = (
+        current_dir / "vscode.svg"
+    )  # Assuming the image is in the same directory as the Python script
     icon_path = pathlib.Path(code_server_install_loc) / "icon.svg"
-    
+
     # Copy the local icon file to the target directory
     shutil.copy(local_icon_path, icon_path)
 
