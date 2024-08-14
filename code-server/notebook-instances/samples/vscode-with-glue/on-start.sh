@@ -10,13 +10,14 @@ nohup sudo -u ec2-user /home/ec2-user/anaconda3/envs/JupyterSystemEnv/bin/python
 code_server_setup_pid=$!
 
 # Timeout Variables
-timeout_duration=$((12 * 60))
+timeout_duration=$((20 * 60))
 check_interval=10
 elapsed_time=0
 
 # Check for glue_ready file and wait for code_server_setup.py if needed
 if [ -e /home/ec2-user/glue_ready ]; then
   while kill -0 $code_server_setup_pid 2>/dev/null; do
+    echo "Process $code_server_setup_pid Running."
     if [ $elapsed_time -ge $timeout_duration ]; then
       echo "Process $code_server_setup_pid did not complete within 12 minutes."
       exit 1
@@ -25,6 +26,8 @@ if [ -e /home/ec2-user/glue_ready ]; then
     elapsed_time=$((elapsed_time + check_interval))
   done
   echo "code_server_setup.py has finished!"
+  # Disable nbserverproxy
+  jupyter serverextension disable nbserverproxy
   # Restart jupyter-server for non-dockerized setups
   systemctl restart jupyter-server
   # Exit with a 0 status code
@@ -99,6 +102,7 @@ EOF
 
 elapsed_time=0
 while kill -0 $code_server_setup_pid 2>/dev/null; do
+  echo "Process $code_server_setup_pid Running."
   if [ $elapsed_time -ge $timeout_duration ]; then
     echo "Process $code_server_setup_pid did not complete within 12 minutes."
     exit 1
@@ -108,5 +112,8 @@ while kill -0 $code_server_setup_pid 2>/dev/null; do
 done
 echo "code_server_setup.py has finished!"
 
+# Disable nbserverproxy
+jupyter serverextension disable nbserverproxy
 systemctl restart jupyter-server
 sudo touch /home/ec2-user/glue_ready
+
