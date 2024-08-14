@@ -116,4 +116,3 @@ echo "code_server_setup.py has finished!"
 jupyter serverextension disable nbserverproxy
 systemctl restart jupyter-server
 sudo touch /home/ec2-user/glue_ready
-
