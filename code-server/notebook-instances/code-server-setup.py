@@ -26,7 +26,6 @@ import pathlib
 import subprocess
 import shutil
 import sys
-import urllib.request
 
 
 def system_configs(args: argparse.Namespace) -> None:
@@ -490,4 +489,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
