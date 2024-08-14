@@ -1,5 +1,5 @@
 #!/bin/bash
-# On-Start Script
+# On-Create Script
 
 set -ex
 
