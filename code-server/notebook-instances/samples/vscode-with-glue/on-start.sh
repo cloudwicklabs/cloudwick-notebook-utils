@@ -3,7 +3,7 @@
 
 set -ex
 
-export notebook_utils_release="cnu-0.1.5"
+export notebook_utils_release="cnu-0.1.6"
 curl -LO https://github.com/cloudwicklabs/cloudwick-notebook-utils/archive/refs/tags/${notebook_utils_release}.tar.gz
 tar -xvzf ${notebook_utils_release}.tar.gz
 nohup sudo -u ec2-user /home/ec2-user/anaconda3/envs/JupyterSystemEnv/bin/python cloudwick-notebook-utils-${notebook_utils_release}/code-server/notebook-instances/code-server-setup.py &
@@ -19,7 +19,7 @@ if [ -e /home/ec2-user/glue_ready ]; then
   while kill -0 $code_server_setup_pid 2>/dev/null; do
     echo "Process $code_server_setup_pid Running."
     if [ $elapsed_time -ge $timeout_duration ]; then
-      echo "Process $code_server_setup_pid did not complete within 12 minutes."
+      echo "Process $code_server_setup_pid did not complete within 20 minutes."
       exit 1
     fi
     sleep $check_interval
@@ -53,8 +53,8 @@ echo "INFO: Site package directory is --- $SITE_PACKAGES_DIR"
 # Install Glue Sessions to Env
 echo "INFO: Installing AWS Glue Sessions with pip"
 # Get Latest Glue Session version
-# LATEST_GLUE_SESSIONS=$(curl -s https://pypi.org/pypi/aws-glue-sessions/json | python -c "import sys, json; print(json.load(sys.stdin)['info']['version'])")
-# pip install aws-glue-sessions==$LATEST_GLUE_SESSIONS
+#LATEST_GLUE_SESSIONS=$(curl -s https://pypi.org/pypi/aws-glue-sessions/json | python -c "import sys, json; print(json.load(sys.stdin)['info']['version'])")
+#pip install aws-glue-sessions==$LATEST_GLUE_SESSIONS
 # If a particular glue session version to be installed
 pip install aws-glue-sessions==1.0.4
 
@@ -104,7 +104,7 @@ elapsed_time=0
 while kill -0 $code_server_setup_pid 2>/dev/null; do
   echo "Process $code_server_setup_pid Running."
   if [ $elapsed_time -ge $timeout_duration ]; then
-    echo "Process $code_server_setup_pid did not complete within 12 minutes."
+    echo "Process $code_server_setup_pid did not complete within 20 minutes."
     exit 1
   fi
   sleep $check_interval
@@ -116,3 +116,4 @@ echo "code_server_setup.py has finished!"
 jupyter serverextension disable nbserverproxy
 systemctl restart jupyter-server
 sudo touch /home/ec2-user/glue_ready
+
