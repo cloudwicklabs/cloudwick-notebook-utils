@@ -3,20 +3,35 @@
 
 set -ex
 
-export notebook_utils_release="cnu-0.1.3"
+export notebook_utils_release="cnu-0.1.5"
 curl -LO https://github.com/cloudwicklabs/cloudwick-notebook-utils/archive/refs/tags/${notebook_utils_release}.tar.gz
 tar -xvzf ${notebook_utils_release}.tar.gz
 nohup sudo -u ec2-user /home/ec2-user/anaconda3/envs/JupyterSystemEnv/bin/python cloudwick-notebook-utils-${notebook_utils_release}/code-server/notebook-instances/code-server-setup.py &
 code_server_setup_pid=$!
 
+# Timeout Variables
+timeout_duration=$((20 * 60))
+check_interval=10
+elapsed_time=0
+
 # Check for glue_ready file and wait for code_server_setup.py if needed
 if [ -e /home/ec2-user/glue_ready ]; then
-    wait $code_server_setup_pid
-    echo "code_server_setup.py has finished!"
-    # Restart jupyter-server for non-dockerized setups
-    systemctl restart jupyter-server
-    # Exit with a 0 status code
-    exit 0
+  while kill -0 $code_server_setup_pid 2>/dev/null; do
+    echo "Process $code_server_setup_pid Running."
+    if [ $elapsed_time -ge $timeout_duration ]; then
+      echo "Process $code_server_setup_pid did not complete within 12 minutes."
+      exit 1
+    fi
+    sleep $check_interval
+    elapsed_time=$((elapsed_time + check_interval))
+  done
+  echo "code_server_setup.py has finished!"
+  # Disable nbserverproxy
+  jupyter serverextension disable nbserverproxy
+  # Restart jupyter-server for non-dockerized setups
+  systemctl restart jupyter-server
+  # Exit with a 0 status code
+  exit 0
 fi
 
 sudo -u ec2-user -i <<'EOF'
@@ -38,8 +53,8 @@ echo "INFO: Site package directory is --- $SITE_PACKAGES_DIR"
 # Install Glue Sessions to Env
 echo "INFO: Installing AWS Glue Sessions with pip"
 # Get Latest Glue Session version
-#LATEST_GLUE_SESSIONS=$(curl -s https://pypi.org/pypi/aws-glue-sessions/json | python -c "import sys, json; print(json.load(sys.stdin)['info']['version'])")
-#pip install aws-glue-sessions==$LATEST_GLUE_SESSIONS
+# LATEST_GLUE_SESSIONS=$(curl -s https://pypi.org/pypi/aws-glue-sessions/json | python -c "import sys, json; print(json.load(sys.stdin)['info']['version'])")
+# pip install aws-glue-sessions==$LATEST_GLUE_SESSIONS
 # If a particular glue session version to be installed
 pip install aws-glue-sessions==1.0.4
 
@@ -85,8 +100,19 @@ echo "c.CondaKernelSpecManager.env_filter='anaconda3$|JupyterSystemEnv$|/R$'" >>
 
 EOF
 
-wait $code_server_setup_pid
+elapsed_time=0
+while kill -0 $code_server_setup_pid 2>/dev/null; do
+  echo "Process $code_server_setup_pid Running."
+  if [ $elapsed_time -ge $timeout_duration ]; then
+    echo "Process $code_server_setup_pid did not complete within 12 minutes."
+    exit 1
+  fi
+  sleep $check_interval
+  elapsed_time=$((elapsed_time + check_interval))
+done
 echo "code_server_setup.py has finished!"
 
+# Disable nbserverproxy
+jupyter serverextension disable nbserverproxy
 systemctl restart jupyter-server
 sudo touch /home/ec2-user/glue_ready

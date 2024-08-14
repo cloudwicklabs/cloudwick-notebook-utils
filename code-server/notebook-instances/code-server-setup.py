@@ -373,7 +373,7 @@ def arg_parser() -> argparse.Namespace:
     )
     # Add command-line arguments
     parser.add_argument(
-        "--code-server-version", type=str, default="4.16.1", help="Code Server version."
+        "--code-server-version", type=str, default="4.91.1", help="Code Server version."
     )
     parser.add_argument(
         "--jupyter-server-proxy-version",
@@ -488,3 +488,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    

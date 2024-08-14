@@ -13,7 +13,7 @@ Install and configure code-server and Jupyter.
 options:
   -h, --help            show this help message and exit
   --code-server-version CODE_SERVER_VERSION
-                        Code Server version. (default: 4.16.1)
+                        Code Server version. (default: 4.91.1)
   --jupyter-server-proxy-version JUPYTER_SERVER_PROXY_VERSION
                         Jupyter server proxy version. (default: 1.6.0)
   --shell-executable SHELL_EXECUTABLE
