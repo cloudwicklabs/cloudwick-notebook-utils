@@ -1,5 +1,8 @@
 #!/bin/bash
 # On-Start Script
+# The script validates if miniconda directory exists, if it exists it maps the envs to jupyter server. 
+# If not proceeds with installation of all dependencies after startup as a background process
+
 
 set -ex
 

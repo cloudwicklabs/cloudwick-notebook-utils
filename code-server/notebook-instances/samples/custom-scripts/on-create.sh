@@ -1,6 +1,6 @@
 #!/bin/bash
 # On-Create Script
-# The script setups code server and restarts jupyter server once it is setup
+# The script setups code server and restarts jupyter server, schedules all dependencies after a short delay using at, which runs as a seperate background process
 
 set -ex
 
