@@ -25,7 +25,7 @@ if [ -e /home/ec2-user/glue_ready ]; then
     exit 0
 fi
 
-cat <<'EOF' > /home/ec2-user/SageMaker/.glue_setup.sh
+cat <<'EOF' >/home/ec2-user/SageMaker/.glue_setup.sh
 
 # System updates and package installation
 sudo yum remove openssl-devel -y
@@ -131,13 +131,13 @@ EOF
 chmod +x /home/ec2-user/SageMaker/.glue_setup.sh
 
 while kill -0 $code_server_setup_pid 2>/dev/null; do
-  echo "Process $code_server_setup_pid Running."
-  if [ $elapsed_time -ge $timeout_duration ]; then
-    echo "Process $code_server_setup_pid did not complete within 20 minutes."
-    exit 1
-  fi
-  sleep $check_interval
-  elapsed_time=$((elapsed_time + check_interval))
+    echo "Process $code_server_setup_pid Running."
+    if [ $elapsed_time -ge $timeout_duration ]; then
+        echo "Process $code_server_setup_pid did not complete within 20 minutes."
+        exit 1
+    fi
+    sleep $check_interval
+    elapsed_time=$((elapsed_time + check_interval))
 done
 echo "code_server_setup.py has finished!"
 
