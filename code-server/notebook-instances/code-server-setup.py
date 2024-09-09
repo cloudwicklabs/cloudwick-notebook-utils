@@ -1,4 +1,5 @@
 #!/home/ec2-user/anaconda3/envs/JupyterSystemEnv/bin/python
+
 """
 Configure Jupyter Proxy and setup Code Server (VSCode) for AWS SageMaker Jupyter Notebook and Lab.
 
@@ -91,7 +92,7 @@ def download_icon(code_server_install_loc):
     """Reads and configures Code Server (VSCode) icon from the local directory"""
     current_dir = pathlib.Path(__file__).parent
     # Assuming the image is in the same directory as the Python script
-    local_icon_path = current_dir / "vscode.svg"  
+    local_icon_path = current_dir / "vscode.svg"
     icon_path = pathlib.Path(code_server_install_loc) / "icon.svg"
     # Copy the local icon file to the target directory
     shutil.copy(local_icon_path, icon_path)
