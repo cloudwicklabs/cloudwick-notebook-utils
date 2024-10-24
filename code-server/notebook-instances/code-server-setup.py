@@ -275,9 +275,12 @@ c.ServerProxy.servers = {{
             'SHELL': '{args.shell_executable}'
         }},
         'absolute_url': False,
-        'timeout': 30
+        'timeout': 60
     }}
 }}
+# Additional settings for Jupyter server
+c.NotebookApp.keep_alive = True
+c.NotebookApp.connection_timeout = 1800000  # 30 minutes
 """
             )
     jupyter_lab_version = subprocess.check_output(
