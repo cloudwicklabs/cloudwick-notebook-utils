@@ -279,8 +279,9 @@ c.ServerProxy.servers = {{
     }}
 }}
 # Additional settings for Jupyter server
-c.NotebookApp.keep_alive = True
-c.NotebookApp.connection_timeout = 1800000  # 30 minutes
+c.NotebookApp.shutdown_no_activity_timeout = 3600 #60 minutes
+c.MappingKernelManager.cull_idle_timeout = 3600   #60 minutes
+c.MappingKernelManager.cull_interval = 300   #5 minutes
 """
             )
     jupyter_lab_version = subprocess.check_output(
@@ -296,6 +297,7 @@ c.NotebookApp.connection_timeout = 1800000  # 30 minutes
 
     conda_setup_commands = [
         ["pip", "uninstall", "--yes", "nbserverproxy", ";"],
+        ["jupyter", "serverextension", "disable", "nbserverproxy"],
         [
             "pip",
             "install",
