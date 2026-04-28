@@ -258,6 +258,12 @@ def configure_jupyter(args: argparse.Namespace):
     if not check_code_in_file(
         jupyter_config_file, f"{code_server_install_loc}/bin/code-server"
     ):
+        bash_loop = (
+            f"while true; do {code_server_install_loc}/bin/code-server "
+            "--auth none --disable-telemetry --bind-addr 127.0.0.1:{port} "
+            f"--open {persistent_volume_path}/; "
+            "echo 'Code Server crashed. Restarting...'; sleep 2; done"
+        )
         with open(jupyter_config_file, "a", encoding="utf-8") as config_file:
             config_file.write(
                 f"""
@@ -268,20 +274,24 @@ c.ServerProxy.servers = {{
             'title': '{args.launcher_entry_title}',
             'icon_path': '{code_server_install_loc}/icon.svg'
         }},
-        'command': ['{code_server_install_loc}/bin/code-server', '--auth', 'none', '--disable-telemetry', '--bind-addr', '127.0.0.1:{{port}}', '--open', '{persistent_volume_path}/'],
+        'command': ['bash', '-c', '{bash_loop}'],
         'environment': {{
             'XDG_DATA_HOME': '{xdg_data_home}',
             'XDG_CONFIG_HOME': '{xdg_config_home}',
             'SHELL': '{args.shell_executable}'
         }},
         'absolute_url': False,
-        'timeout': 60
+        'timeout': 120
     }}
 }}
 # Additional settings for Jupyter server
 c.NotebookApp.shutdown_no_activity_timeout = 3600 #60 minutes
 c.MappingKernelManager.cull_idle_timeout = 3600   #60 minutes
 c.MappingKernelManager.cull_interval = 300   #5 minutes
+
+# Fixes the 1006 WebSocketClosedError crashes
+c.ServerApp.websocket_ping_interval = 60000
+c.ServerApp.websocket_ping_timeout  = 30000
 """
             )
     jupyter_lab_version = subprocess.check_output(

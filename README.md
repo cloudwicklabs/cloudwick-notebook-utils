@@ -15,7 +15,7 @@ export notebook_utils_release_latest=$(curl -s https://api.github.com/repos/clou
 
 ```sh
 # or use a specific release
-export notebook_utils_release="cnu-0.1.8"
+export notebook_utils_release="cnu-0.1.9"
 curl -LO https://github.com/cloudwicklabs/cloudwick-notebook-utils/archive/refs/tags/${notebook_utils_release}.tar.gz
 tar -xvzf ${notebook_utils_release}.tar.gz
 nohup sudo -u ec2-user /home/ec2-user/anaconda3/envs/JupyterSystemEnv/bin/python cloudwick-notebook-utils-${notebook_utils_release}/code-server/notebook-instances/code-server-setup.py &
@@ -44,3 +44,7 @@ You may find sample Lifecycle policies for vscode-with-glue for [start-up here](
 #### Starting VSCode from Jupyter Notebook
 
 ![Jupyter Notebook - Code Server](/code-server/notebook-instances/imgs/jupyter-code-server.png)
+
+### Debugging
+
+In the case of failures you can check the jupyter log cat `/var/log/jupyter.log` or the nohup logs.
