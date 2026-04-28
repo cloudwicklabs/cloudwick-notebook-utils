@@ -47,4 +47,4 @@ You may find sample Lifecycle policies for vscode-with-glue for [start-up here](
 
 ### Debugging
 
-In the case of failures you can check the jupyter log cat /var/log/jupyter.log or the nohup logs.
+In the case of failures you can check the jupyter log cat `/var/log/jupyter.log` or the nohup logs.
