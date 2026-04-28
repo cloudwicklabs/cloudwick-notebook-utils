@@ -291,7 +291,7 @@ c.MappingKernelManager.cull_interval = 300   #5 minutes
 
 # Fixes the 1006 WebSocketClosedError crashes
 c.ServerApp.websocket_ping_interval = 60000
-c.ServerApp.websocket_ping_timeout = 120000
+c.ServerApp.websocket_ping_timeout  = 30000
 """
             )
     jupyter_lab_version = subprocess.check_output(
