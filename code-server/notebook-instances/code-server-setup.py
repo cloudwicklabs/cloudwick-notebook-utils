@@ -268,20 +268,24 @@ c.ServerProxy.servers = {{
             'title': '{args.launcher_entry_title}',
             'icon_path': '{code_server_install_loc}/icon.svg'
         }},
-        'command': ['{code_server_install_loc}/bin/code-server', '--auth', 'none', '--disable-telemetry', '--bind-addr', '127.0.0.1:{{port}}', '--open', '{persistent_volume_path}/'],
+        'command': ['bash', '-c', 'while true; do {code_server_install_loc}/bin/code-server --auth none --disable-telemetry --bind-addr 127.0.0.1:{{port}} --open {persistent_volume_path}/; echo "Code Server crashed. Restarting..."; sleep 2; done'],
         'environment': {{
             'XDG_DATA_HOME': '{xdg_data_home}',
             'XDG_CONFIG_HOME': '{xdg_config_home}',
             'SHELL': '{args.shell_executable}'
         }},
         'absolute_url': False,
-        'timeout': 60
+        'timeout': 120
     }}
 }}
 # Additional settings for Jupyter server
 c.NotebookApp.shutdown_no_activity_timeout = 3600 #60 minutes
 c.MappingKernelManager.cull_idle_timeout = 3600   #60 minutes
 c.MappingKernelManager.cull_interval = 300   #5 minutes
+
+# Fixes the 1006 WebSocketClosedError crashes
+c.ServerApp.websocket_ping_interval = 60000
+c.ServerApp.websocket_ping_timeout = 120000
 """
             )
     jupyter_lab_version = subprocess.check_output(
