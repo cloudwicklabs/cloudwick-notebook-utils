@@ -44,3 +44,7 @@ You may find sample Lifecycle policies for vscode-with-glue for [start-up here](
 #### Starting VSCode from Jupyter Notebook
 
 ![Jupyter Notebook - Code Server](/code-server/notebook-instances/imgs/jupyter-code-server.png)
+
+### Debugging
+
+In the case of failures you can check the jupyter log cat /var/log/jupyter.log or the nohup logs.
